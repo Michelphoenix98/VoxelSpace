@@ -48,7 +48,7 @@ class HUDScreen extends StatefulWidget {
 }
 
 class _HUDScreenState extends State<HUDScreen> {
-  double px = 100, py = 25, pd = 2.6;
+  double px = 800, py = 600, pd = 1.7;
   @override
   void initState() {
     super.initState();
@@ -64,7 +64,6 @@ class _HUDScreenState extends State<HUDScreen> {
     return Scaffold(body:
             BlocBuilder<MapLoadCubit, MapLoadState>(builder: (context, state) {
       if (state is MapLoadedState) {
-        print('hello!');
         External.Image offscreen = External.Image.rgb(
             MediaQuery.of(context).size.width.toInt(),
             MediaQuery.of(context).size.height.toInt());
@@ -75,7 +74,7 @@ class _HUDScreenState extends State<HUDScreen> {
           int maxScreenHeight = MediaQuery.of(context).size.height.toInt();
           double s = cos(pd + angle);
           double c = sin(pd + angle);
-          for (int depth = 10; depth < 1000; depth += 1) {
+          for (int depth = 10; depth < 600; depth += 1) {
             int hmx = (px + depth * s).toInt();
             int hmy = (py + depth * c).toInt();
             if (hmx < 0 ||
@@ -86,7 +85,7 @@ class _HUDScreenState extends State<HUDScreen> {
             }
             int height = state.height.getPixel(hmx, hmy) & 255;
             int color = state.colour.getPixel(hmx, hmy);
-            double sy = 50 * (100 - height) / depth;
+            double sy = 240 * (300 - height) / depth;
             if (sy > maxScreenHeight) {
               continue;
             }
