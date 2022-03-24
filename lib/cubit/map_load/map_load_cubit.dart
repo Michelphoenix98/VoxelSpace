@@ -14,10 +14,10 @@ class MapLoadCubit extends Cubit<MapLoadState> {
   void loadMap() async {
     try {
       emit(MapLoadingState());
-      print((await mapRepo.loadTexture())!.buffer.asByteData().lengthInBytes);
+
       var colour = External.decodeImage(
           (await mapRepo.loadTexture())!.buffer.asUint8List());
-      print(colour);
+
       var height = External.decodeImage(
           (await mapRepo.loadHeight())!.buffer.asUint8List());
       emit(MapLoadedState(colour: colour!, height: height!));
