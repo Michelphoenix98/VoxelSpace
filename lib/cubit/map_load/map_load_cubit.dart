@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:image/image.dart' as External;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart';
@@ -8,7 +9,8 @@ part 'map_load_state.dart';
 
 class MapLoadCubit extends Cubit<MapLoadState> {
   final MapRepo mapRepo;
-
+  List<External.Image> textureCache = [];
+  List<External.Image> heightCache = [];
   MapLoadCubit({required this.mapRepo}) : super(MapLoadInitState());
 
   void loadMap() async {
@@ -17,10 +19,11 @@ class MapLoadCubit extends Cubit<MapLoadState> {
 
       var colour = External.decodeImage(
           (await mapRepo.loadTexture())!.buffer.asUint8List());
-
+      textureCache.add(colour!);
       var height = External.decodeImage(
           (await mapRepo.loadHeight())!.buffer.asUint8List());
-      emit(MapLoadedState(colour: colour!, height: height!));
+      heightCache.add(height!);
+      emit(MapLoadedState());
     } on Exception catch (e) {
       emit(MapLoadingFailedState());
     }

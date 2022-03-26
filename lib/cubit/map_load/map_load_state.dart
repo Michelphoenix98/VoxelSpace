@@ -10,9 +10,7 @@ abstract class MapLoadState extends Equatable {
 class MapLoadInitState extends MapLoadState {}
 
 class MapLoadedState extends MapLoadState {
-  final Image colour;
-  final Image height;
-  MapLoadedState({required this.height, required this.colour});
+  MapLoadedState();
 }
 
 class MapLoadingState extends MapLoadState {}
