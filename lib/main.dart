@@ -82,6 +82,8 @@ class _HUDScreenState extends State<HUDScreen> with TickerProviderStateMixin {
     animationControllerPd.value += details.delta.dx / 400;
     if (animationControllerPd.value >= 6.28) {
       animationControllerPd.value %= 6.28;
+    } else if (animationControllerPd.value <= 0) {
+      animationControllerPd.value = 6.28;
     }
     animationControllerHorizon.value -= details.delta.dy;
   }
@@ -191,9 +193,8 @@ class Frame extends StatelessWidget {
     return BlocBuilder<MapLoadCubit, MapLoadState>(builder: (context, state) {
       if (state is MapLoadedState) {
         return AnimatedBuilder(
-          animation: Listenable.merge([
-            animationControllerAngle,
-          ]),
+          animation: Listenable.merge(
+              [animationControllerAngle, animationControllerHorizon]),
           builder: (context, child) {
             return SizedBox(
               height: MediaQuery.of(context).size.height,
@@ -205,15 +206,15 @@ class Frame extends StatelessWidget {
                   painter: RenderFrame(
                     mapLoadCubit: BlocProvider.of<MapLoadCubit>(context),
                     viewAngle: animationControllerAngle.value,
-                    point: const Offset(800, 600),
+                    point: const Offset(800, 500),
                     // viewAngle: pd,
-                    cameraHeight: 200,
+                    cameraHeight: 300,
                     horizon: animationControllerHorizon.value,
                     scaleFactor: 180,
                     widthFactor: 3,
                     distance: 600,
                   ),
-                  size: const Size(400, 300),
+                  size: const Size(300, 200),
                 ),
               ),
             );
