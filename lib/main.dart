@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:voxel_space/cubit/map_load/map_load_cubit.dart';
 import 'package:voxel_space/data_provider/map/map_app_repo.dart';
 import 'package:voxel_space/data_provider/map/map_repo.dart';
+import 'package:voxel_space/widgets/joystick_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,11 +54,13 @@ class HUDScreen extends StatefulWidget {
   State<HUDScreen> createState() => _HUDScreenState();
 }
 
-enum AniProps { width, height, color }
-
 class _HUDScreenState extends State<HUDScreen> with TickerProviderStateMixin {
   late AnimationController animationControllerPd;
   late AnimationController animationControllerHorizon;
+  late AnimationController animationControllerTranslationY;
+  late AnimationController animationControllerTranslationX;
+  late AnimationController animationControllerCameraHeight;
+  bool _isPressed = true;
   @override
   void initState() {
     super.initState();
@@ -70,12 +73,33 @@ class _HUDScreenState extends State<HUDScreen> with TickerProviderStateMixin {
     );
     animationControllerHorizon = AnimationController(
       vsync: this,
-      lowerBound: 0,
+      lowerBound: -120,
       upperBound: 180,
+      duration: const Duration(milliseconds: 5000),
+    );
+    animationControllerTranslationY = AnimationController(
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 1024,
+      duration: const Duration(milliseconds: 5000),
+    );
+    animationControllerTranslationX = AnimationController(
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 1024,
+      duration: const Duration(milliseconds: 5000),
+    );
+    animationControllerCameraHeight = AnimationController(
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 600,
       duration: const Duration(milliseconds: 5000),
     );
     animationControllerPd.value = 2.9;
     animationControllerHorizon.value = 120;
+    animationControllerTranslationY.value = 500;
+    animationControllerTranslationX.value = 800;
+    animationControllerCameraHeight.value = 200;
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -85,17 +109,81 @@ class _HUDScreenState extends State<HUDScreen> with TickerProviderStateMixin {
     } else if (animationControllerPd.value <= 0) {
       animationControllerPd.value = 6.28;
     }
+
     animationControllerHorizon.value -= details.delta.dy;
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanUpdate: _onPanUpdate,
-      child: Frame(
-        animationControllerAngle: animationControllerPd,
-        animationControllerHorizon: animationControllerHorizon,
-      ),
+    return Stack(
+      children: [
+        GestureDetector(
+          onPanUpdate: _onPanUpdate,
+          child: Frame(
+            animationControllerCameraHeight: animationControllerCameraHeight,
+            animationControllerTranslationY: animationControllerTranslationY,
+            animationControllerAngle: animationControllerPd,
+            animationControllerHorizon: animationControllerHorizon,
+            animationControllerTranslationX: animationControllerTranslationX,
+          ),
+        ),
+        Positioned(
+          bottom: 100,
+          left: 20,
+          child: GestureDetector(
+            onTapDown: (_) async {
+              _isPressed = true;
+
+              do {
+                animationControllerTranslationY.value +=
+                    4 * sin(animationControllerPd.value);
+                animationControllerTranslationX.value +=
+                    4 * cos(animationControllerPd.value);
+                // for testing
+                await Future.delayed(Duration(milliseconds: 24));
+              } while (_isPressed);
+
+              /*  animationControllerCameraHeight.value -=
+                  10 * cos(animationControllerHorizon.value);
+              print('camera height:${animationControllerCameraHeight.value}');*/
+            },
+            onTapUp: (_) => setState(() => _isPressed = false),
+            child: const Icon(
+              Icons.arrow_upward,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          left: 20,
+          child: GestureDetector(
+            onTapDown: (_) async {
+              _isPressed = true;
+
+              do {
+                animationControllerTranslationY.value -=
+                    4 * sin(animationControllerPd.value);
+                animationControllerTranslationX.value -=
+                    4 * cos(animationControllerPd.value);
+                // for testing
+                await Future.delayed(Duration(milliseconds: 24));
+              } while (_isPressed);
+
+              /*  animationControllerCameraHeight.value -=
+                  10 * cos(animationControllerHorizon.value);
+              print('camera height:${animationControllerCameraHeight.value}');*/
+            },
+            onTapUp: (_) => setState(() => _isPressed = false),
+            child: const Icon(
+              Icons.arrow_downward,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
     /*return Scaffold(
         backgroundColor: Colors.lightBlue,
@@ -182,19 +270,29 @@ class Frame extends StatelessWidget {
   const Frame(
       {Key? key,
       required this.animationControllerAngle,
-      required this.animationControllerHorizon})
+      required this.animationControllerHorizon,
+      required this.animationControllerTranslationY,
+      required this.animationControllerTranslationX,
+      required this.animationControllerCameraHeight})
       : super(key: key);
 
   final AnimationController animationControllerAngle;
   final AnimationController animationControllerHorizon;
-
+  final AnimationController animationControllerTranslationY;
+  final AnimationController animationControllerTranslationX;
+  final AnimationController animationControllerCameraHeight;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MapLoadCubit, MapLoadState>(builder: (context, state) {
       if (state is MapLoadedState) {
         return AnimatedBuilder(
-          animation: Listenable.merge(
-              [animationControllerAngle, animationControllerHorizon]),
+          animation: Listenable.merge([
+            animationControllerAngle,
+            animationControllerHorizon,
+            animationControllerTranslationY,
+            animationControllerTranslationX,
+            animationControllerCameraHeight
+          ]),
           builder: (context, child) {
             return SizedBox(
               height: MediaQuery.of(context).size.height,
@@ -206,9 +304,10 @@ class Frame extends StatelessWidget {
                   painter: RenderFrame(
                     mapLoadCubit: BlocProvider.of<MapLoadCubit>(context),
                     viewAngle: animationControllerAngle.value,
-                    point: const Offset(800, 500),
+                    point: Offset(animationControllerTranslationX.value,
+                        animationControllerTranslationY.value),
                     // viewAngle: pd,
-                    cameraHeight: 300,
+                    cameraHeight: animationControllerCameraHeight.value,
                     horizon: animationControllerHorizon.value,
                     scaleFactor: 180,
                     widthFactor: 3,
