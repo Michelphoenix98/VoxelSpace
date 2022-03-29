@@ -3,7 +3,7 @@
 Demo of the Voxel Space Engine. This project is a Flutter recreation of the Voxel Space Engine 
 based on Sebastian Macke and Leanardo Ono's implementation of the same.
 
-<img src="images/voxel.gif" alt="Voxel space demo" width="200"/>
+<img src="images/voxel.gif" alt="Voxel space demo" width="500"/>
 
 ## Getting Started
 
