@@ -172,7 +172,7 @@ class _AltitudeDecreaseWidgetState extends State<AltitudeDecreaseWidget> {
       },
       onTapUp: (_) => setState(() => _isPressedHeight = false),
       child: const Icon(
-        Icons.arrow_circle_up_rounded,
+        Icons.arrow_circle_down_rounded,
         size: 40,
         color: Colors.white,
       ),
