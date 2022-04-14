@@ -1,22 +1,13 @@
 # voxel_space
 
 Demo of the Voxel Space Engine. This project is a Flutter recreation of the Voxel Space Engine 
-based on Sebastian Macke and Leanardo Ono's implementation of the same.
+based on Sebastian Macke and Leanardo Ono's implementation of the same. A 2.5D Rendering Engine in 
+under 80 lines of code! This was a huge deal back in 90s, the algorithm was developed for the game Comanche(1987),
+people used to spend thousands of hours flying around in their aircrafts.
 
 <img src="images/voxel.gif" alt="Voxel space demo" width="500"/>
+ 
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
 
 ## Maps
 [color](maps/C1W.png),
